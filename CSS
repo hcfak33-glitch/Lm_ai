@@ -1,0 +1,18 @@
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-download {
+    display: inline-block;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 10px;
+}
