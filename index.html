@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>AI Photo & Video</title>
+
 <style>
 body{
     background:#0f172a;
@@ -31,18 +32,41 @@ button{
 }
 .photo{background:#22c55e;}
 .video{background:#38bdf8;}
+.loading{display:none;margin-top:10px;}
 </style>
 </head>
+
 <body>
 
 <div class="box">
 <h2>AI Media Tool</h2>
 
-<button class="photo">📷 Photo Upload</button>
-<button class="video">🎥 Video Upload</button>
+<button class="photo" onclick="photoInput.click()">📷 Photo Upload</button>
+<input type="file" id="photoInput" accept="image/*" hidden>
 
-<p>Backend এখনো যুক্ত হয়নি</p>
+<button class="video" onclick="videoInput.click()">🎥 Video Upload</button>
+<input type="file" id="videoInput" accept="video/*" hidden>
+
+<div class="loading" id="loading">Processing...</div>
 </div>
+
+<script>
+const photoInput = document.getElementById("photoInput");
+const videoInput = document.getElementById("videoInput");
+const loading = document.getElementById("loading");
+
+photoInput.onchange = () => {
+    loading.style.display = "block";
+    alert("Photo selected (backend এখনো যুক্ত হয়নি)");
+    loading.style.display = "none";
+};
+
+videoInput.onchange = () => {
+    loading.style.display = "block";
+    alert("Video selected (backend এখনো যুক্ত হয়নি)");
+    loading.style.display = "none";
+};
+</script>
 
 </body>
 </html>
