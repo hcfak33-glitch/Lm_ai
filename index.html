@@ -7,61 +7,22 @@
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .box { background: #1e293b; padding: 30px; border-radius: 20px; text-align: center; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h2 { margin-bottom: 20px; }
-        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .photo-btn { background: #10b981; color: white; }
-        .video-btn { background: #3b82f6; color: white; }
-        #status { display: none; margin-top: 15px; color: #fbbf24; font-weight: bold; }
-        #download-link { display: none; margin-top: 15px; background: #ef4444; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        .photo { background: #10b981; color: white; }
+        .video { background: #3b82f6; color: white; }
+        #status { margin-top: 15px; color: #fbbf24; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="box">
         <h2>AI Media Tool</h2>
-        <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📸 Photo Upload</button>
-        <input type="file" id="photoInput" accept="image/*" hidden>
-
-        <button class="video-btn" onclick="document.getElementById('videoInput').click()">🎥 Video Upload</button>
-        <input type="file" id="videoInput" accept="video/*" hidden>
-
-        <div id="status">Processing...</div>
-        <a id="download-link" href="#">⬇️ Download Result</a>
+        <button class="photo" onclick="document.getElementById('pInput').click()">📸 Photo Upload</button>
+        <input type="file" id="pInput" accept="image/*" hidden onchange="alert('Photo Selected! (Backend integration pending)')">
+        
+        <button class="video" onclick="document.getElementById('vInput').click()">🎥 Video Upload</button>
+        <input type="file" id="vInput" accept="video/*" hidden onchange="alert('Video Selected! (Backend integration pending)')">
+        
+        <p id="status">আপনার ফাইলগুলো সুরক্ষিত আছে।</p>
     </div>
-
-    <script>
-        const photoInput = document.getElementById("photoInput");
-        const videoInput = document.getElementById("videoInput");
-        const status = document.getElementById("status");
-        const downloadBtn = document.getElementById("download-link");
-
-        // আপনার ব্যাকএন্ড URL
-        const backendURL = "https://lm-ai-backend.onrender.com/upload"; 
-
-        async function handleUpload(file) {
-            if (!file) return;
-            status.style.display = "block";
-            downloadBtn.style.display = "none";
-            status.innerText = "Processing with AI... ⏳";
-
-            const formData = new FormData();
-            formData.append("media", file);
-
-            try {
-                const response = await fetch(backendURL, { method: "POST", body: formData });
-                if (!response.ok) throw new Error("Server Error");
-                const data = await response.json();
-                if (data.downloadUrl) {
-                    status.innerText = "✅ Done!";
-                    downloadBtn.style.display = "block";
-                    downloadBtn.href = data.downloadUrl;
-                }
-            } catch (err) {
-                status.innerText = "❌ Error: " + err.message;
-            }
-        }
-
-        photoInput.onchange = (e) => handleUpload(e.target.files[0]);
-        videoInput.onchange = (e) => handleUpload(e.target.files[0]);
-    </script>
 </body>
 </html>
