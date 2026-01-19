@@ -6,55 +6,72 @@
     <title>AI Media Tool</title>
     <style>
         body { background: #0f172a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #1e293b; padding: 30px; border-radius: 20px; text-align: center; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .box { background: #1e293b; padding: 40px; border-radius: 20px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .photo-btn { background: #10b981; color: white; }
         .video-btn { background: #3b82f6; color: white; }
-        #status { display: none; margin-top: 20px; color: #fbbf24; font-weight: bold; }
-        #download-link { display: none; margin-top: 20px; background: #ef4444; color: white; text-decoration: none; padding: 10px; border-radius: 8px; display: none; }
+        #loading-text { display: none; margin-top: 20px; color: #fbbf24; font-weight: bold; }
+        #download-btn { display: none; margin-top: 20px; background: #ef4444; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; display: inline-block; width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>AI Media Tool</h2>
-        <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📸 Photo Upload</button>
-        <input type="file" id="photoInput" accept="image/*" hidden>
-        <button class="video-btn" onclick="document.getElementById('videoInput').click()">🎥 Video Upload</button>
-        <input type="file" id="videoInput" accept="video/*" hidden>
-        <div id="status">Processing...</div>
-        <a id="download-link" href="#" style="display: none;">⬇️ Download Result</a>
-    </div>
 
-    <script>
-        const photoInput = document.getElementById("photoInput");
-        const videoInput = document.getElementById("videoInput");
-        const status = document.getElementById("status");
-        const downloadBtn = document.getElementById("download-link");
+<div class="box">
+    <h2>AI Media Tool</h2>
+    
+    <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📸 Photo Upload</button>
+    <input type="file" id="photoInput" accept="image/*" hidden>
 
-        const backendURL = "https://lm-ai-backend.onrender.com/upload"; 
+    <button class="video-btn" onclick="document.getElementById('videoInput').click()">🎥 Video Upload</button>
+    <input type="file" id="videoInput" accept="video/*" hidden>
 
-        async function handleUpload(file) {
-            status.style.display = "block";
-            downloadBtn.style.display = "none";
-            status.innerText = "Processing with AI... ⏳";
+    <div id="loading-text">Processing... Please wait ⏳</div>
+    <a id="download-btn" href="#">⬇️ Download Result</a>
+</div>
 
-            const formData = new FormData();
-            formData.append("media", file);
+<script>
+    const photoInput = document.getElementById("photoInput");
+    const videoInput = document.getElementById("videoInput");
+    const loadingText = document.getElementById("loading-text");
+    const downloadBtn = document.getElementById("download-btn");
 
-            try {
-                const response = await fetch(backendURL, { method: "POST", body: formData });
-                const data = await response.json();
-                if (data.downloadUrl) {
-                    status.innerText = "✅ Done!";
-                    downloadBtn.style.display = "block";
-                    downloadBtn.href = data.downloadUrl;
-                }
-            } catch (err) {
-                status.innerText = "❌ Connection Failed!";
+    // আপনার ব্যাকএন্ডের আসল URL
+    const backendURL = "https://lm-ai-backend.onrender.com/upload"; 
+
+    async function handleUpload(file) {
+        if (!file) return;
+
+        // UI রিসেট
+        loadingText.style.display = "block";
+        downloadBtn.style.display = "none";
+
+        const formData = new FormData();
+        formData.append("media", file);
+
+        try {
+            const response = await fetch(backendURL, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("Server Error");
+
+            const data = await response.json();
+
+            if (data.downloadUrl) {
+                loadingText.innerText = "✅ Processing Complete!";
+                downloadBtn.style.display = "block";
+                downloadBtn.href = data.downloadUrl;
             }
+        } catch (error) {
+            alert("Error: " + error.message);
+            loadingText.style.display = "none";
         }
-        photoInput.onchange = (e) => handleUpload(e.target.files[0]);
-        videoInput.onchange = (e) => handleUpload(e.target.files[0]);
-    </script>
+    }
+
+    photoInput.onchange = (e) => handleUpload(e.target.files[0]);
+    videoInput.onchange = (e) => handleUpload(e.target.files[0]);
+</script>
+
 </body>
 </html>
