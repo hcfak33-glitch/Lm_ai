@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Photo & Video</title>
+    <title>AI Photo & Video Tool</title>
     <style>
         body {
             background: #0f172a;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,39 +17,46 @@
         }
         .box {
             background: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
-            width: 320px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
+        h2 { margin-bottom: 25px; font-size: 24px; color: #f8fafc; }
         button {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
+            padding: 15px;
+            margin: 12px 0;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .photo { background: #22c55e; color: white; }
+        .photo { background: #10b981; color: white; }
         .video { background: #3b82f6; color: white; }
-        button:hover { opacity: 0.8; }
+        button:hover { transform: translateY(-2px); opacity: 0.9; }
         
         #loading {
             display: none;
-            margin-top: 15px;
+            margin-top: 20px;
             color: #fbbf24;
-            font-style: italic;
+            font-weight: 500;
         }
-        .download-link {
+        .download-btn {
             display: none;
-            margin-top: 15px;
-            color: #10b981;
-            text-decoration: underline;
-            cursor: pointer;
+            margin-top: 20px;
+            background: #f43f5e;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: bold;
         }
     </style>
@@ -59,14 +66,18 @@
 <div class="box">
     <h2>AI Media Tool</h2>
     
-    <button class="photo" onclick="document.getElementById('photoInput').click()">📸 Photo Upload</button>
+    <button class="photo" onclick="document.getElementById('photoInput').click()">
+        📸 Photo Upload
+    </button>
     <input type="file" id="photoInput" accept="image/*" hidden>
 
-    <button class="video" onclick="document.getElementById('videoInput').click()">🎥 Video Upload</button>
+    <button class="video" onclick="document.getElementById('videoInput').click()">
+        🎥 Video Upload
+    </button>
     <input type="file" id="videoInput" accept="video/*" hidden>
 
     <div id="loading">Processing... Please wait.</div>
-    <a id="downloadBtn" class="download-link">Click here to Download</a>
+    <a id="downloadBtn" class="download-btn">⬇️ Download Processed File</a>
 </div>
 
 <script>
@@ -75,19 +86,19 @@
     const loading = document.getElementById("loading");
     const downloadBtn = document.getElementById("downloadBtn");
 
-    // আপনার আসল ব্যাকএন্ড URL
+    // আপনার ব্যাকএন্ড URL
     const backendURL = "https://lm-ai-backend.onrender.com/upload"; 
 
     async function handleFileUpload(file) {
         if (!file) return;
 
-        // UI আপডেট: লোডিং দেখানো
+        // UI আপডেট
         loading.style.display = "block";
         downloadBtn.style.display = "none";
-        loading.innerText = "Uploading to AI Server...";
+        loading.innerText = "Processing with AI... ⏳";
 
         const formData = new FormData();
-        formData.append("media", file); // নিশ্চিত হোন আপনার backend এই 'media' নামেই ফাইল রিসিভ করে
+        formData.append("media", file); 
 
         try {
             const response = await fetch(backendURL, {
@@ -95,24 +106,23 @@
                 body: formData,
             });
 
-            if (!response.ok) throw new Error("Server Error!");
+            if (!response.ok) throw new Error("Server error occurred!");
 
             const data = await response.json();
 
             if (data.downloadUrl) {
-                loading.innerText = "✅ Processing Complete!";
+                loading.innerText = "✅ Done! Click below to download.";
                 downloadBtn.style.display = "block";
                 downloadBtn.href = data.downloadUrl;
-                downloadBtn.setAttribute("download", "processed_media");
             } else {
-                alert("Processing done but no download link found.");
+                alert("Processing successful, but no link received.");
             }
         } catch (error) {
             console.error(error);
-            alert("Error: " + error.message);
+            alert("Error connecting to AI Backend: " + error.message);
         } finally {
-            // ৫ সেকেন্ড পর লোডিং মেসেজ সরিয়ে ফেলা
-            setTimeout(() => { loading.style.display = "none"; }, 5000);
+            // কিছুক্ষণ পর লোডিং টেক্সট সরিয়ে ফেলা
+            setTimeout(() => { if(downloadBtn.style.display === "none") loading.style.display = "none"; }, 5000);
         }
     }
 
